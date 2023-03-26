@@ -246,6 +246,19 @@ bool HT_Search( const Hash_table* ht, int id, float *salary )
    return ret_val;
 }
 
+/**
+ * @brief Elimina una entrada en la tabla hash.
+ *
+ * @param ht Referencia a una tabla hash.
+ * @param id La llave de la entrada que se desea eliminar.
+ *
+ * @return   true si el elemento existía; false si el elemento no existe.
+ */
+bool HT_Remove( const Hash_table* ht, int id )
+{
+   return false;
+}
+
 
 #define HASH_TABLE_SIZE 10
 
@@ -279,6 +292,21 @@ int main()
    printf( "El empleado con ID=%d [%s] está en mis registros\n", id,
          HT_Search( by_salary, id, &salary ) ? "SÍ" : "NO" );
 
-   HT_Delete( &by_salary );
 
+// Activar cuando la función Remove() haya sido escrita
+#if 0 
+   if( HT_Remove( by_salary, 1234 ) )
+   {
+      printf( "Elemento eliminado\n" );
+   }
+   else
+   {
+      printf( "El elemento no pudo ser eliminado porque no existe\n" );
+   }
+
+   print_hash_table( by_salary );
+#endif  
+
+
+   HT_Delete( &by_salary );
 }
