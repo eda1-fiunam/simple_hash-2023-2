@@ -1,19 +1,19 @@
-/*Copyright (C) 
- * 
+/*Copyright (C)
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
+ *
  * francisco dot rodriguez at ingenieria dot unam dot edu
  */
 
@@ -25,14 +25,14 @@
 #ifndef DBG_HELP
 // Poner a cero para desactivar la ayuda de depuración
 #define DBG_HELP 1
-#endif  
+#endif
 
 // NO TOCAR:
 #if DBG_HELP > 0
 #define DBG_PRINT( ... ) do{ fprintf( stderr, "DBG:" __VA_ARGS__ ); } while( 0 )
 #else
 #define DBG_PRINT( ... ) ;
-#endif  
+#endif
 
 
 // Es la función hash
@@ -53,8 +53,8 @@ static int probe( int key, size_t i )
  * @brief Estado de la celda. Está codificado en el campo |id| de @see Entry_table
  */
 enum
-{ 
-   EMPTY_CELL =   -1, 
+{
+   EMPTY_CELL =   -1,
    DELETED_CELL = -2,
 };
 
@@ -75,7 +75,7 @@ typedef struct
 // for debugging purposes only!
 static void print_hash_table( const Hash_table* ht )
 {
-   printf( "----------------------------------------\n" ); 
+   printf( "----------------------------------------\n" );
    printf( "HT.Capacity: %ld\n", ht->capacity );
    printf( "HT.Len: %ld\n", ht->len );
    printf( "HT.Table:\n" );
@@ -83,7 +83,7 @@ static void print_hash_table( const Hash_table* ht )
    {
       printf( "[%02ld] (%d, %0.2f)\n", i, ht->table[ i ].id, ht->table[ i ].salary );
    }
-   printf( "----------------------------------------\n\n" ); 
+   printf( "----------------------------------------\n\n" );
 }
 
 
@@ -116,7 +116,7 @@ Hash_table* HT_New( size_t capacity )
             ht->table[ i ].salary = 0.0;
          }
       }
-      else 
+      else
       {
          free( ht );
          ht = NULL;
@@ -167,7 +167,7 @@ bool HT_Insert( Hash_table* ht, int id, float salary )
 
    int i = 0;
 
-   // si el slot está desocupado, se salta el while; en caso contrario entra a buscar uno. 
+   // si el slot está desocupado, se salta el while; en caso contrario entra a buscar uno.
    // Asumimos que hay más slots que datos a guardar:
    while( ht->table[ pos ].id >= 0 )
    {
@@ -201,7 +201,7 @@ bool HT_Insert( Hash_table* ht, int id, float salary )
  *
  * @return true si el elemento fue encontrado; false en caso contrario.
  */
-bool HT_Search( const Hash_table* ht, int id, float* salary )
+bool HT_Search( const Hash_table* ht, int id, float *salary )
 {
    assert( ht );
    assert( ht->len > 0 );
@@ -212,17 +212,28 @@ bool HT_Search( const Hash_table* ht, int id, float* salary )
    DBG_PRINT( "HT_Search: Calculé el valor hash: %d para la llave: %d\n", pos, id );
 
    bool found = false;
-   int i = 0;
-   while( ht->table[ pos ].id != EMPTY_CELL && found == false )
-   {    
-      pos = ( home + probe( id, i ) ) % ht->capacity;
-      ++i;
-
-      DBG_PRINT( "HT_Search: Recalculé el valor hash: %d para la llave: %d\n", pos, id );
-
-      if( ht->table[ pos ].id == id )
+   if( ht->table[ pos ].id == id )
+   {
+      found = true;
+   }
+   else if( ht->table[ pos ].id == EMPTY_CELL )
+   {
+      found = false;
+   }
+   else
+   {
+      int i = 0;
+      while( ht->table[ pos ].id != EMPTY_CELL && found == false )
       {
-         found = true;
+         pos = ( home + probe( id, i ) ) % ht->capacity;
+         ++i;
+
+         DBG_PRINT( "HT_Search: Recalculé el valor hash: %d para la llave: %d\n", pos, id );
+
+         if( ht->table[ pos ].id == id )
+         {
+            found = true;
+         }
       }
    }
 
@@ -232,10 +243,9 @@ bool HT_Search( const Hash_table* ht, int id, float* salary )
       *salary = ht->table[ pos ].salary;
       ret_val = true;
    }
-
    return ret_val;
-   // un sólo punto de salida
 }
+
 
 #define HASH_TABLE_SIZE 10
 
@@ -272,5 +282,3 @@ int main()
    HT_Delete( &by_salary );
 
 }
-
-
